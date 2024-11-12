@@ -1,57 +1,42 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QInputDialog, QHeaderView, QErrorMessage
+from PyQt6 import uic
+
+from databaser import Databaser
+
 import sys
 
 
+db = Databaser()
+
+
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
 
+        uic.loadUi('main.ui', self)
+
         self.setWindowTitle('Тестовая система')
-        self.setGeometry(100, 100, 400, 300)
 
         self.initUI()
 
     def initUI(self):
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-
-        layout = QVBoxLayout()
-
-        self.create_btn = QPushButton('Создать тест')
         self.create_btn.clicked.connect(self.create_test)
-
-        self.edit_btn = QPushButton('Редактировать тест')
         self.edit_btn.clicked.connect(self.edit_test)
-
-        self.do_btn = QPushButton('Пройти тест')
-        self.do_btn.clicked.connect(self.take_test)
-
-        self.stat_btn = QPushButton('Просмотр статистики')
+        self.do_btn.clicked.connect(self.do_test)
         self.stat_btn.clicked.connect(self.view_statistics)
-
-        self.import_btn = QPushButton('Импорт тестов')
         self.import_btn.clicked.connect(self.import_test)
-
-        self.export_btn = QPushButton('Экспорт тестов')
         self.export_btn.clicked.connect(self.export_test)
 
-        layout.addWidget(self.create_btn)
-        layout.addWidget(self.edit_btn)
-        layout.addWidget(self.do_btn)
-        layout.addWidget(self.stat_btn)
-        layout.addWidget(self.import_btn)
-        layout.addWidget(self.export_btn)
-
-        central_widget.setLayout(layout)
+    def do_test(self):
+        print('Прохождение теста')
 
     def create_test(self):
-        print('Создание теста')
+        self.second_window = CreateWindow()
+        self.second_window.show()
 
     def edit_test(self):
         print('Редактирование теста')
-
-    def take_test(self):
-        print('Прохождение теста')
 
     def view_statistics(self):
         print('Просмотр статистики')
@@ -61,6 +46,51 @@ class MainWindow(QMainWindow):
 
     def export_test(self):
         print('Экспорт тестов')
+
+
+class CreateWindow(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+
+        uic.loadUi('create.ui', self)
+        self.setWindowTitle('Создание теста')
+        self.initUI()
+
+        self.qs = []
+        self.error = QErrorMessage()
+
+    def initUI(self):
+        self.add_btn.clicked.connect(self.add_question)
+        self.finish_btn.clicked.connect(self.finish)
+        self.table.setHorizontalHeaderLabels(['Вопрос', 'Правильный ответ'])
+        header = self.table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+
+    def add_question(self):
+        q, ok_pressed = QInputDialog.getText(self, 'Создание вопроса', 'Введите вопрос')
+        if not ok_pressed:
+            return
+
+        a, ok_pressed = QInputDialog.getText(self, 'Создание вопроса', f'Введите ответ на вопрос "{q}"')
+        if not ok_pressed:
+            return
+
+        self.qs.append((q, a))
+        self.table.setRowCount(len(self.qs))
+        self.table.setItem(len(self.qs) - 1, 0, QTableWidgetItem(q))
+        self.table.setItem(len(self.qs) - 1, 1, QTableWidgetItem(a))
+
+    def finish(self):
+        if self.name.text().strip() and self.qs:
+            db.create_test(self.name.text(), self.qs)
+            self.close()
+            return
+        elif not self.name.text().strip():
+            self.error.showMessage('Название теста не может быть пустым')
+        elif not self.qs:
+            self.error.showMessage('Тест должен содержать хотя бы один вопрос')
 
 
 if __name__ == '__main__':
