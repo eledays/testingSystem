@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>898</width>
-    <height>752</height>
+    <width>621</width>
+    <height>381</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,57 +31,29 @@
          </property>
          <item>
           <widget class="QLabel" name="label">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Создание теста</string>
+            <string>Выберите тест</string>
            </property>
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="text">
-              <string>Название теста</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLineEdit" name="name"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <widget class="QTableWidget" name="table">
-           <property name="columnCount">
-            <number>2</number>
+          <widget class="QGroupBox" name="groupBox">
+           <property name="title">
+            <string/>
            </property>
-           <attribute name="horizontalHeaderVisible">
-            <bool>true</bool>
-           </attribute>
-           <attribute name="horizontalHeaderCascadingSectionResizes">
-            <bool>false</bool>
-           </attribute>
-           <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>150</number>
-           </attribute>
-           <attribute name="horizontalHeaderMinimumSectionSize">
-            <number>107</number>
-           </attribute>
-           <column/>
-           <column/>
+           <layout class="QHBoxLayout" name="horizontalLayout_2"/>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="add_btn">
+          <widget class="QPushButton" name="start_btn">
            <property name="text">
-            <string>Добавить вопрос</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="finish_btn">
-           <property name="text">
-            <string>Готово</string>
+            <string>Начать прохождение</string>
            </property>
           </widget>
          </item>
@@ -97,7 +69,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>898</width>
+     <width>621</width>
      <height>21</height>
     </rect>
    </property>

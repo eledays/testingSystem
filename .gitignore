@@ -1,3 +1,4 @@
 /.venv/
 /.idea/
-/answers.csv
+/sources/answers.csv
+test.py

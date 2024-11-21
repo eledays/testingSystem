@@ -5,14 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3558a049-890d-4b3d-945a-e197b7306d68" name="Changes" comment="creating test">
-      <change afterPath="$PROJECT_DIR$/Roboto.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/choice_test.ui" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/result.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.ui" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sources/result.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Roboto.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/sources/Roboto.ttf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/choice_test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/choice_test.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/create.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/create.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/databaser.py" beforeDir="false" afterPath="$PROJECT_DIR$/databaser.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/main.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/result.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/result.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/result.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/test.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ts.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/ts.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,6 +62,7 @@
   "keyToString": {
     "Python.databaser.executor": "Debug",
     "Python.main.executor": "Run",
+    "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "G:/code/lyceum/testingSystem",
@@ -67,6 +74,9 @@
       <recent name="G:\code\lyceum\testingSystem" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="G:\code\lyceum\testingSystem\sources" />
+      <recent name="G:\code\lyceum\testingSystem\imgs" />
+      <recent name="G:\code\lyceum\testingSystem\uis" />
       <recent name="G:\code\lyceum\testingSystem" />
     </key>
   </component>
@@ -148,8 +158,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/databaser.py</url>
-          <line>76</line>
-          <option name="timeStamp" value="2" />
+          <line>101</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main.py</url>
+          <line>112</line>
+          <option name="timeStamp" value="14" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

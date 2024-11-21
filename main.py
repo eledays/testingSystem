@@ -1,4 +1,6 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QInputDialog, QHeaderView, QErrorMessage, QRadioButton, QLabel, QLineEdit, QHBoxLayout, QPushButton
+import os
+
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QInputDialog, QHeaderView, QErrorMessage, QRadioButton, QLabel, QLineEdit, QHBoxLayout, QPushButton, QFileDialog
 from PyQt6.QtGui import QPixmap
 from PyQt6 import uic
 
@@ -18,7 +20,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        uic.loadUi('main.ui', self)
+        uic.loadUi('uis/main.ui', self)
         self.setWindowTitle('Тестовая система')
         self.initUI()
 
@@ -32,8 +34,12 @@ class MainWindow(QMainWindow):
         self.import_btn.clicked.connect(self.import_test)
         self.export_btn.clicked.connect(self.export_test)
 
+        self.logo = QPixmap(os.path.join('sources', 'logo.png'))
+        self.logo = self.logo.scaled(500, int(500 * self.logo.height() / self.logo.width()))
+        self.label.setPixmap(self.logo)
+
     def do_test(self):
-        self.second_window = ChoiceTestWindow()
+        self.second_window = ChoiceTestWindow(ChoiceTestWindow.DO_TEST)
         self.second_window.show()
 
     def create_test(self):
@@ -41,41 +47,55 @@ class MainWindow(QMainWindow):
         self.second_window.show()
 
     def edit_test(self):
-        print('Редактирование теста')
+        self.second_window = ChoiceTestWindow(ChoiceTestWindow.EDIT)
+        self.second_window.show()
 
     def view_statistics(self):
-        print('Просмотр статистики')
+        self.second_window = ChoiceTestWindow(ChoiceTestWindow.VIEW_STATISTICS)
+        self.second_window.show()
 
     def import_test(self):
-        print('Импорт тестов')
+        filename = QFileDialog.getOpenFileName(self, 'Выберите файл')[0]
+        if filename.split('.')[-1] == 'csv':
+            db.import_test(filename)
+            self.statusBar().showMessage('Тест доступен для прохождения')
+        else:
+            self.statusBar().showMessage('Неверный формат файла')
 
     def export_test(self):
-        print('Экспорт тестов')
+        self.second_window = ChoiceTestWindow(ChoiceTestWindow.EXPORT)
+        self.second_window.show()
 
 
 class CreateWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, test_id=None):
         super().__init__()
 
-        uic.loadUi('create.ui', self)
+        uic.loadUi('uis/create.ui', self)
         self.setWindowTitle('Создание теста')
         self.initUI()
 
-        self.qs = []
+        self.update = test_id is not None
+        self.test_id = test_id
+        self.qs = [] if not self.update else db.get_qas(test_id)
         self.error = QErrorMessage()
+
+        self.table.setRowCount(len(self.qs))
+        for i in range(len(self.qs)):
+            self.table.setItem(i, 0, QTableWidgetItem(str(self.qs[i][0])))
+            self.table.setItem(i, 1, QTableWidgetItem(str(self.qs[i][1])))
 
     def initUI(self):
         self.add_btn.clicked.connect(self.add_question)
         self.finish_btn.clicked.connect(self.finish)
+        self.edit_btn.clicked.connect(self.edit)
         self.table.setHorizontalHeaderLabels(['Вопрос', 'Правильный ответ'])
         header = self.table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
     def add_question(self):
-        # TODO Добавить вопросы с вариантами ответов
-
         q, ok_pressed = QInputDialog.getText(self, 'Создание вопроса', 'Введите вопрос')
         if not ok_pressed:
             return
@@ -89,9 +109,40 @@ class CreateWindow(QMainWindow):
         self.table.setItem(len(self.qs) - 1, 0, QTableWidgetItem(q))
         self.table.setItem(len(self.qs) - 1, 1, QTableWidgetItem(a))
 
+    def edit(self):
+        i, ok_pressed = QInputDialog.getText(self, 'Изменение вопроса', 'Введите номер вопроса')
+        if not ok_pressed or not i.isdigit() or int(i) - 1 >= len(self.qs) or int(i) - 1 < 0:
+            return
+        i = int(i) - 1
+
+        q, ok_pressed = QInputDialog.getText(
+            self, 'Изменение вопроса', 'Введите новый вопрос (оставьте пустым, чтобы сохранить текущий)'
+        )
+        if not ok_pressed:
+            return
+
+        a, ok_pressed = QInputDialog.getText(
+            self, 'Изменение вопроса', f'Введите новый ответ (оставьте пустым, чтобы сохранить текущий)'
+        )
+        if not ok_pressed:
+            return
+
+        old = self.qs[i]
+        self.qs[i] = (q if q else old[0], a if a else old[1])
+        self.table.setItem(i, 0, QTableWidgetItem(self.qs[i][0]))
+        self.table.setItem(i, 1, QTableWidgetItem(self.qs[i][1]))
+
     def finish(self):
-        if self.name.text().strip() and self.qs:
+        if self.name.text().strip() and self.qs and not self.update:
             db.create_test(self.name.text(), self.qs)
+            self.close()
+            return
+        elif self.qs and self.update:
+            db.edit_test(
+                self.test_id,
+                self.name.text().strip() if self.name.text().strip() else db.get_test_name(self.test_id),
+                self.qs
+            )
             self.close()
             return
         elif not self.name.text().strip():
@@ -102,17 +153,48 @@ class CreateWindow(QMainWindow):
 
 class ChoiceTestWindow(QMainWindow):
 
-    def __init__(self):
+    DO_TEST = 0
+    VIEW_STATISTICS = 1
+    EXPORT = 2
+    EDIT = 3
+
+    def __init__(self, action):
         super().__init__()
 
-        uic.loadUi('choice_test.ui', self)
+        self.action = action
+
+        uic.loadUi('uis/choice_test.ui', self)
         self.setWindowTitle('Выбор теста')
         self.initUI()
 
     def initUI(self):
-        tests = db.get_test_names()
+
+        if self.action == self.DO_TEST:
+            tests = db.get_test_names()
+
+        elif self.action == self.VIEW_STATISTICS:
+            self.start_btn.setText('Посмотреть результат')
+
+            test_ids = map(lambda x: int(x.rstrip('.csv')), os.listdir('results'))
+            tests = list(map(lambda x: (db.get_test_name(x), x), test_ids))
+            if not tests:
+                self.statusBar().showMessage('Вы не проходили ни одного теста')
+                return
+
+        elif self.action == self.EXPORT:
+            tests = db.get_test_names()
+            self.start_btn.setText('Экспорт')
+
+        elif self.action == self.EDIT:
+            tests = db.get_test_names()
+            self.start_btn.setText('Редактировать')
+
+        if not tests:
+            self.statusBar().showMessage('Тестов не найдено')
+            return
 
         self.test_btns = []
+
         for i, test in enumerate(tests):
             self.test_btns.append(QRadioButton(test[0], parent=self.groupBox))
             self.test_btns[-1].move(25, i * 25 + 25)
@@ -125,11 +207,23 @@ class ChoiceTestWindow(QMainWindow):
         self.start_btn.setEnabled(True)
 
     def start_test(self):
-        test_name = list(filter(lambda x: x.toggled, self.test_btns))[0].text()
+        test_name = list(filter(lambda x: x.isChecked(), self.test_btns))[0].text()
         test_id = db.get_test_id(test_name)
-        self.second_window = TestWindow(test_id)
-        self.second_window.show()
-        self.close()
+        if self.action == self.DO_TEST:
+            self.second_window = TestWindow(test_id)
+            self.second_window.show()
+            self.close()
+        elif self.action == self.VIEW_STATISTICS:
+            self.second_window = ResultWindow(test_id)
+            self.second_window.show()
+            self.close()
+        elif self.action == self.EXPORT:
+            name = db.export_test(test_id)
+            self.statusBar().showMessage(f'Сохранено в файл "{name}"')
+        elif self.action == self.EDIT:
+            self.second_window = CreateWindow(test_id)
+            self.second_window.show()
+            self.close()
 
 
 class TestWindow(QMainWindow):
@@ -145,7 +239,7 @@ class TestWindow(QMainWindow):
 
         super().__init__()
 
-        uic.loadUi('test.ui', self)
+        uic.loadUi('uis/test.ui', self)
         self.setWindowTitle(f'Тест "{self.test_name}"')
         self.initUI()
 
@@ -177,34 +271,46 @@ class TestWindow(QMainWindow):
 
 class ResultWindow(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, test_id=None):
         super().__init__()
 
-        uic.loadUi('result.ui', self)
+        uic.loadUi('uis/result.ui', self)
 
-        self.setWindowTitle('Результат теста')
+        self.test_id = test_id
+
+        self.setWindowTitle(f'Результат теста "{db.get_test_name(self.test_id)}"')
         self.setMaximumSize(500, 500)
         self.setMinimumSize(500, 500)
+
+        if self.test_id is None:
+            r, a = filer.get_right_all_count()
+        else:
+            r, a = filer.get_right_all_count(self.test_id)
+        make_result_image(r, a)
 
         self.initUI()
 
     def initUI(self):
-        make_result_image()
-
-        self.pixmap = QPixmap('result.png')
-
+        self.pixmap = QPixmap('sources/result.png')
         self.img_lbl.setPixmap(self.pixmap)
+
+        self.exit_btn.clicked.connect(self.close)
 
 
 def make_result_image(right_count, all_count):
     img = Image.new('RGBA', (500, 500), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    myFont = ImageFont.truetype('Roboto.ttf', 20)
+    myFont = ImageFont.truetype('sources/Roboto.ttf', 40)
 
-    draw.text((200, 150), 'Результат теста', font=myFont, fill=(255, 255, 255, 255))
+    draw.text((275, 220), f'{right_count}/{all_count}', font=myFont, fill=(0, 0, 0, 255))
 
-    draw.rectangle((200, 150, 300, 350), fill=(255, 255, 255, 255))
-    img.save('result.png')
+    draw.rounded_rectangle((125, 150, 250, 350), fill=(220, 220, 220, 255), radius=15)
+
+    p = 1 - right_count / all_count
+    if p != 1:
+        draw.rounded_rectangle((125, 150 + 200 * p, 250, 350), fill=(0, 200, 0, 255), radius=15)
+
+    img.save('sources/result.png')
 
 
 if __name__ == '__main__':
