@@ -79,13 +79,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="edit_btn">
-           <property name="text">
-            <string>Изменить вопрос</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QPushButton" name="finish_btn">
            <property name="text">
             <string>Готово</string>

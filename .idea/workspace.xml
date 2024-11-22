@@ -4,21 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3558a049-890d-4b3d-945a-e197b7306d68" name="Changes" comment="creating test">
-      <change afterPath="$PROJECT_DIR$/sources/result.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="3558a049-890d-4b3d-945a-e197b7306d68" name="Changes" comment="editing, export/import, statistics">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/testingSystem.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Roboto.ttf" beforeDir="false" afterPath="$PROJECT_DIR$/sources/Roboto.ttf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/choice_test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/choice_test.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/create.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/create.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/databaser.py" beforeDir="false" afterPath="$PROJECT_DIR$/databaser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/main.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/result.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/result.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/result.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/test.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests.db" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ts.ui" beforeDir="false" afterPath="$PROJECT_DIR$/uis/ts.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +55,7 @@
     "Python.test.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "G:/code/lyceum/testingSystem",
+    "last_opened_file_path": "G:/code/lyceum",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
@@ -145,13 +135,22 @@
       <option name="project" value="LOCAL" />
       <updated>1731433822351</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="editing, export/import, statistics">
+      <option name="closed" value="true" />
+      <created>1732183149293</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1732183149293</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="creating test" />
-    <option name="LAST_COMMIT_MESSAGE" value="creating test" />
+    <MESSAGE value="editing, export/import, statistics" />
+    <option name="LAST_COMMIT_MESSAGE" value="editing, export/import, statistics" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
