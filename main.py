@@ -196,7 +196,7 @@ class ChoiceTestWindow(QMainWindow):
         self.test_btns = []
 
         for i, test in enumerate(tests):
-            self.test_btns.append(QRadioButton(test[0], parent=self.groupBox))
+            self.test_btns.append(QRadioButton(test[0], self.groupBox))
             self.test_btns[-1].move(25, i * 25 + 25)
             self.test_btns[-1].toggled.connect(self.select_test)
 
