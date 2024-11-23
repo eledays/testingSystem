@@ -15,11 +15,16 @@ db = Databaser()
 filer = Filer()
 
 
+# Основное окно приложения
 class MainWindow(QMainWindow):
+    """Основное окно приложения."""
 
     def __init__(self):
+        """Инициализация основного окна приложения."""
+
         super().__init__()
 
+        # Загрузка интерфейса из файла
         uic.loadUi('uis/main.ui', self)
         self.setWindowTitle('Тестовая система')
         self.initUI()
@@ -27,6 +32,8 @@ class MainWindow(QMainWindow):
         self.second_window = None
 
     def initUI(self):
+        """Инициализация интерфейса основного окна приложения."""
+
         self.create_btn.clicked.connect(self.create_test)
         self.edit_btn.clicked.connect(self.edit_test)
         self.do_btn.clicked.connect(self.do_test)
@@ -39,22 +46,31 @@ class MainWindow(QMainWindow):
         self.label.setPixmap(self.logo)
 
     def do_test(self):
+        """Открывает окно выбора теста для прохождения."""
+
         self.second_window = ChoiceTestWindow(ChoiceTestWindow.DO_TEST)
         self.second_window.show()
 
     def create_test(self):
+        """Открывает окно для создания нового теста."""
+
         self.second_window = CreateWindow()
         self.second_window.show()
 
     def edit_test(self):
+        """Открывает окно выбора теста для редактирования."""
         self.second_window = ChoiceTestWindow(ChoiceTestWindow.EDIT)
         self.second_window.show()
 
     def view_statistics(self):
+        """Открывает окно выбора теста для просмотра статитстики."""
+
         self.second_window = ChoiceTestWindow(ChoiceTestWindow.VIEW_STATISTICS)
         self.second_window.show()
 
     def import_test(self):
+        """Импортирует тест из файла CSV."""
+
         filename = QFileDialog.getOpenFileName(self, 'Выберите файл')[0]
         if filename.split('.')[-1] == 'csv':
             db.import_test(filename)
@@ -63,30 +79,44 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage('Неверный формат файла')
 
     def export_test(self):
+        """Открывает окно для экспорта теста."""
+
         self.second_window = ChoiceTestWindow(ChoiceTestWindow.EXPORT)
         self.second_window.show()
 
 
+
+# Создание окна для создания теста
 class CreateWindow(QMainWindow):
+    """Класс окна для создания нового теста"""
 
     def __init__(self, test_id=None):
+        """
+        Инициализация окна для создания теста.
+        Если test_id не None, то окно используется для редактирования существующего теста.
+        """
+
         super().__init__()
 
+        # Загрузка интерфейса из файла
         uic.loadUi('uis/create.ui', self)
         self.setWindowTitle('Создание теста')
         self.initUI()
 
+        # Проверка, является ли окно окном для редактирования теста
         self.update = test_id is not None
         self.test_id = test_id
         self.qs = [] if not self.update else db.get_qas(test_id)
-        self.error = QErrorMessage()
 
+        # Установка количества строк в таблице и заполнение (если тест редактируется)
         self.table.setRowCount(len(self.qs))
         for i in range(len(self.qs)):
             self.table.setItem(i, 0, QTableWidgetItem(str(self.qs[i][0])))
             self.table.setItem(i, 1, QTableWidgetItem(str(self.qs[i][1])))
 
     def initUI(self):
+        """Инициализация пользовательского интерфейса."""
+
         self.add_btn.clicked.connect(self.add_question)
         self.finish_btn.clicked.connect(self.finish)
         self.edit_btn.clicked.connect(self.edit)
@@ -95,7 +125,10 @@ class CreateWindow(QMainWindow):
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 
+        self.error = QErrorMessage()
+
     def add_question(self):
+        """Добавляет новый вопрос и ответ в таблицу."""
         q, ok_pressed = QInputDialog.getText(self, 'Создание вопроса', 'Введите вопрос')
         if not ok_pressed:
             return
@@ -110,6 +143,8 @@ class CreateWindow(QMainWindow):
         self.table.setItem(len(self.qs) - 1, 1, QTableWidgetItem(a))
 
     def edit(self):
+        """Редактирует выбранный вопрос и ответ."""
+
         i, ok_pressed = QInputDialog.getText(self, 'Изменение вопроса', 'Введите номер вопроса')
         if not ok_pressed or not i.isdigit() or int(i) - 1 >= len(self.qs) or int(i) - 1 < 0:
             return
@@ -133,6 +168,7 @@ class CreateWindow(QMainWindow):
         self.table.setItem(i, 1, QTableWidgetItem(self.qs[i][1]))
 
     def finish(self):
+        """Завершает создание теста и сохраняет его в базе данных."""
         if self.name.text().strip() and self.qs and not self.update:
             db.create_test(self.name.text(), self.qs)
             self.close()
@@ -151,7 +187,12 @@ class CreateWindow(QMainWindow):
             self.error.showMessage('Тест должен содержать хотя бы один вопрос')
 
 
+
+# Окно выбора теста
 class ChoiceTestWindow(QMainWindow):
+    """
+    Окно для выбора теста. Позволяет выбрать тест для прохождения, просмотра статистики, экспорта результатов или редактирования.
+    """
 
     DO_TEST = 0
     VIEW_STATISTICS = 1
@@ -159,6 +200,7 @@ class ChoiceTestWindow(QMainWindow):
     EDIT = 3
 
     def __init__(self, action):
+        """Инициализация окна."""
         super().__init__()
 
         self.action = action
@@ -168,11 +210,14 @@ class ChoiceTestWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        """Инициализация пользовательского интерфейса."""
 
         if self.action == self.DO_TEST:
+            # Прохождение - все тесты из БД
             tests = db.get_test_names()
 
         elif self.action == self.VIEW_STATISTICS:
+            # Результаты - только тесты, для которых сохранены результаты
             self.start_btn.setText('Посмотреть результат')
 
             test_ids = map(lambda x: int(x.rstrip('.csv')), os.listdir('results'))
@@ -182,10 +227,12 @@ class ChoiceTestWindow(QMainWindow):
                 return
 
         elif self.action == self.EXPORT:
+            # Экспорт - все тесты из БД
             tests = db.get_test_names()
             self.start_btn.setText('Экспорт')
 
         elif self.action == self.EDIT:
+            # Редактирование - все тесты из БД
             tests = db.get_test_names()
             self.start_btn.setText('Редактировать')
 
@@ -204,9 +251,13 @@ class ChoiceTestWindow(QMainWindow):
         self.start_btn.clicked.connect(self.start_test)
 
     def select_test(self):
+        """Включает кнопку "Начать" при выборе какого-нибудь варианта."""
+
         self.start_btn.setEnabled(True)
 
     def start_test(self):
+        """Открывает окно теста или результатов теста в зависимости от выбранного действия."""
+
         test_name = list(filter(lambda x: x.isChecked(), self.test_btns))[0].text()
         test_id = db.get_test_id(test_name)
         if self.action == self.DO_TEST:
@@ -226,9 +277,13 @@ class ChoiceTestWindow(QMainWindow):
             self.close()
 
 
+
+# Окно теста
 class TestWindow(QMainWindow):
+    """Окно для прохождения теста. Позволяет проходить тест и сохранять ответы."""
 
     def __init__(self, test_id):
+        """Инициализация окна."""
 
         self.test_id = test_id
         self.test_name = db.get_test_name(self.test_id)
@@ -244,6 +299,8 @@ class TestWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        """Инициализация пользовательского интерфейса окна теста."""
+
         for i, q in enumerate(self.qs):
             self.question_labels.append(QLabel(f'{i + 1}. {q}', self))
             self.question_line_edits.append(QLineEdit(self))
@@ -261,6 +318,8 @@ class TestWindow(QMainWindow):
         self.finish_btn.clicked.connect(self.finish_test)
 
     def finish_test(self):
+        """Сохраняет ответы на вопросы, открывает результаты и закрывает окно теста."""
+
         answers = [x.text() for x in self.question_line_edits]
         filer.save_answers(answers, db, self.test_id)
 
@@ -269,9 +328,12 @@ class TestWindow(QMainWindow):
         self.second_window.show()
 
 
+
 class ResultWindow(QMainWindow):
 
     def __init__(self, test_id=None):
+        """Инициализация окна."""
+
         super().__init__()
 
         uic.loadUi('uis/result.ui', self)
@@ -291,6 +353,8 @@ class ResultWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        """Инициализация пользовательского интерфейса окна теста."""
+
         self.pixmap = QPixmap('sources/result.png')
         self.img_lbl.setPixmap(self.pixmap)
 
@@ -298,6 +362,12 @@ class ResultWindow(QMainWindow):
 
 
 def make_result_image(right_count, all_count):
+    """
+    Создание изображения с результатом теста.
+    :param right_count: количество правильных ответов
+    :param all_count: общее количество вопросов
+    """
+    
     img = Image.new('RGBA', (500, 500), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     myFont = ImageFont.truetype('sources/Roboto.ttf', 40)
